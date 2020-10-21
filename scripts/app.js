@@ -3,14 +3,17 @@
 const recordYes = document.querySelector('.record-yes');
 const recordNo = document.querySelector('.record-no');
 const stop = document.querySelector('.stop');
+const startOver = document.querySelector('.start-over');
 const soundClips = document.querySelector('.sound-clips');
 const canvas = document.querySelector('.visualizer');
 const mainSection = document.querySelector('.main-controls');
 
 const message = document.querySelector('.main-text');
 let yesRecorded = false;
+let lastRecording = false;
 
 recordNo.style.display = "none";
+startOver.style.display = "none";
 
 // disable stop button while not recording
 
@@ -55,6 +58,8 @@ if (navigator.mediaDevices.getUserMedia) {
       stop.disabled = false;
       recordYes.disabled = true;
       recordNo.disabled = true;
+
+      lastRecording = true;
     }
 
     stop.onclick = function() {
@@ -74,6 +79,18 @@ if (navigator.mediaDevices.getUserMedia) {
       stop.disabled = true;
       recordYes.disabled = false;
       recordNo.disabled = false;
+
+      if (lastRecording) {
+        recordNo.style.display = "none";
+        stop.style.display = "none";
+        canvas.style.display = "none";
+        message.style.display = "none";
+        startOver.style.display = "block";
+      }
+    }
+
+    startOver.onclick = function() {
+      window.location.reload();
     }
 
     mediaRecorder.onstop = function(e) {
