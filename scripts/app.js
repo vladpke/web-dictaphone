@@ -1,10 +1,16 @@
 // set up basic variables for app
 
-const record = document.querySelector('.record');
+const recordYes = document.querySelector('.record-yes');
+const recordNo = document.querySelector('.record-no');
 const stop = document.querySelector('.stop');
 const soundClips = document.querySelector('.sound-clips');
 const canvas = document.querySelector('.visualizer');
 const mainSection = document.querySelector('.main-controls');
+
+const message = document.querySelector('.main-text');
+let yesRecorded = false;
+
+recordNo.style.display = "none";
 
 // disable stop button while not recording
 
@@ -28,32 +34,53 @@ if (navigator.mediaDevices.getUserMedia) {
 
     visualize(stream);
 
-    record.onclick = function() {
+    recordYes.onclick = function() {
       mediaRecorder.start();
       console.log(mediaRecorder.state);
       console.log("recorder started");
-      record.style.background = "red";
+      recordYes.style.background = "red";
 
       stop.disabled = false;
-      record.disabled = true;
+      recordYes.disabled = true;
+      recordNo.disabled = true;
+    }
+
+    recordNo.onclick = function() {
+      yesRecorded = true;
+      mediaRecorder.start();
+      console.log(mediaRecorder.state);
+      console.log("recorder started");
+      recordNo.style.background = "red";
+
+      stop.disabled = false;
+      recordYes.disabled = true;
+      recordNo.disabled = true;
     }
 
     stop.onclick = function() {
       mediaRecorder.stop();
       console.log(mediaRecorder.state);
       console.log("recorder stopped");
-      record.style.background = "";
-      record.style.color = "";
+      recordYes.style.background = "";
+      recordYes.style.color = "";
+      recordNo.style.background = "";
+      recordNo.style.color = "";
+
+      recordNo.style.display = "block";
+      recordYes.style.display = "none";
+
       // mediaRecorder.requestData();
 
       stop.disabled = true;
-      record.disabled = false;
+      recordYes.disabled = false;
+      recordNo.disabled = false;
     }
 
     mediaRecorder.onstop = function(e) {
       console.log("data available after MediaRecorder.stop() called.");
 
-      const clipName = prompt('Enter a name for your sound clip?','My unnamed clip');
+      const yesClipName = "yes";
+      const noClipName = "no";
 
       const clipContainer = document.createElement('article');
       const clipLabel = document.createElement('p');
@@ -65,10 +92,10 @@ if (navigator.mediaDevices.getUserMedia) {
       deleteButton.textContent = 'Delete';
       deleteButton.className = 'delete';
 
-      if(clipName === null) {
-        clipLabel.textContent = 'My unnamed clip';
+      if(yesRecorded) {
+        clipLabel.textContent = noClipName;
       } else {
-        clipLabel.textContent = clipName;
+        clipLabel.textContent = yesClipName;
       }
 
       clipContainer.appendChild(audio);
