@@ -96,18 +96,21 @@ if (navigator.mediaDevices.getUserMedia) {
     mediaRecorder.onstop = function(e) {
       console.log("data available after MediaRecorder.stop() called.");
 
-      const yesClipName = "yes";
-      const noClipName = "no";
+      const yesClipName = "Yes";
+      const noClipName = "No";
 
       const clipContainer = document.createElement('article');
       const clipLabel = document.createElement('p');
       const audio = document.createElement('audio');
       const deleteButton = document.createElement('button');
+      const sendButton = document.createElement('button');
 
       clipContainer.classList.add('clip');
       audio.setAttribute('controls', '');
       deleteButton.textContent = 'Delete';
       deleteButton.className = 'delete';
+      sendButton.textContent = 'Send';
+      sendButton.className = 'send';
 
       if(yesRecorded) {
         clipLabel.textContent = noClipName;
@@ -118,6 +121,7 @@ if (navigator.mediaDevices.getUserMedia) {
       clipContainer.appendChild(audio);
       clipContainer.appendChild(clipLabel);
       clipContainer.appendChild(deleteButton);
+      clipContainer.appendChild(sendButton);
       soundClips.appendChild(clipContainer);
 
       audio.controls = true;
@@ -132,14 +136,10 @@ if (navigator.mediaDevices.getUserMedia) {
         evtTgt.parentNode.parentNode.removeChild(evtTgt.parentNode);
       }
 
-      clipLabel.onclick = function() {
-        const existingName = clipLabel.textContent;
-        const newClipName = prompt('Enter a new name for your sound clip?');
-        if(newClipName === null) {
-          clipLabel.textContent = existingName;
-        } else {
-          clipLabel.textContent = newClipName;
-        }
+      sendButton.onclick = function(e) {
+        deleteButton.style.display = "none";
+        sendButton.innerHTML = "Sent";
+        startOver.style.display = "none";
       }
     }
 
