@@ -7,6 +7,7 @@ const startOver = document.querySelector('.start-over');
 const soundClips = document.querySelector('.sound-clips');
 const canvas = document.querySelector('.visualizer');
 const mainSection = document.querySelector('.main-controls');
+let fd = new FormData();
 
 const message = document.querySelector('.main-text');
 const subMessage = document.querySelector('.sub-text');
@@ -120,10 +121,14 @@ if (navigator.mediaDevices.getUserMedia) {
       clipContainer.classList.add('clip');
       audio.setAttribute('controls', '');
 
+      const blob = new Blob(chunks, { 'type' : 'audio/ogg; codecs=opus' });
+
       if(yesRecorded) {
         clipLabel.textContent = noClipName;
+        fd.append("audio_data", blob, noClipName);
       } else {
         clipLabel.textContent = yesClipName;
+        fd.append("audio_data", blob, yesClipName);
       }
 
       clipContainer.appendChild(audio);
@@ -131,7 +136,7 @@ if (navigator.mediaDevices.getUserMedia) {
       soundClips.appendChild(clipContainer);
 
       audio.controls = true;
-      const blob = new Blob(chunks, { 'type' : 'audio/ogg; codecs=opus' });
+      //old blob creation location
       chunks = [];
       const audioURL = window.URL.createObjectURL(blob);
 
@@ -164,6 +169,25 @@ function download(url) {
   a.download = "test.ogg";
   a.click();
   window.URL.revokeObjectURL(url);
+}
+
+function upload(blobUrl) {
+  var a = document.createElement("a");
+  document.body.appendChild(a);
+  a.style = "display: none";
+  a.href = blobUrl;
+  a.download = "test.ogg";
+  a.click();
+  window.URL.revokeObjectURL(blobUrl);
+
+  let xhr = new XMLHttpRequest();
+  xhr.onload=function(e) {
+      if(this.readyState === 4) {
+          console.log("Server returned: ", e.target.responseText);
+      }
+  };
+  xhr.open("POST", "upload.php", true);
+  xhr.send(fd);
 }
 
 function visualize(stream) {
